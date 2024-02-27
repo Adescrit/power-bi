@@ -1,0 +1,13 @@
+-- M code that can be used to create a table containing the last refresh time of your Power BI dataset
+-- Add this code to a Blank Query in the Power Query editor
+-- Use it to inform your report users when the model was last refreshed, by adding the last refresh date / time to a visual on your report page(s)
+
+let
+    Source = DateTime.LocalNow(),
+    #"Converted to Table" = #table(1, {{Source}}),
+    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "Last Refresh DateTime"}}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"Last Refresh DateTime", type datetime}}),
+    #"Inserted Date" = Table.AddColumn(#"Changed Type", "Last Refresh Date", each DateTime.Date([Last Refresh DateTime]), type date),
+    #"Inserted Time" = Table.AddColumn(#"Inserted Date", "Last Refresh Time", each DateTime.Time([Last Refresh DateTime]), type time)
+in
+    #"Inserted Time"
